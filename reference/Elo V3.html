@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELO — Rede Nacional de Doação de Alimentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1116;
+    --paper:#F4F3F0;
+    --card:#FFFFFF;
+    --ink-soft: rgba(14,17,22,.66);
+    --ink-faint: rgba(14,17,22,.42);
+    --line: rgba(14,17,22,.13);
+    --signal:#00C2CE;
+    --signal-deep:#006B74;
+    --signal-tint: rgba(0,194,206,.12);
+    --ember:#EF8600;
+    --ember-deep:#913B00;
+    --ember-tint: rgba(239,134,0,.12);
+    --shadow-ink: rgba(14,17,22,.12);
+    --on-accent:#0E1116;
+    --radius:14px;
+    --maxw:1140px;
+  }
+  html[data-theme='dark']{
+    --ink:#F2F1EC;
+    --paper:#0E1116;
+    --card:#171B21;
+    --ink-soft: rgba(242,241,236,.68);
+    --ink-faint: rgba(242,241,236,.46);
+    --line: rgba(242,241,236,.14);
+    --signal:#2AD6E0;
+    --signal-deep:#8CEBF0;
+    --signal-tint: rgba(42,214,224,.14);
+    --ember:#FF9A33;
+    --ember-deep:#FFCB94;
+    --ember-tint: rgba(255,154,51,.14);
+    --shadow-ink: rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Space Grotesk',system-ui,sans-serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    transition:background .25s ease, color .25s ease;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;margin:0;line-height:1.08;letter-spacing:-.01em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+  img,svg{display:block;max-width:100%;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+  :focus-visible{outline:2px solid var(--ember);outline-offset:3px;border-radius:4px;}
+ 
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in-view{opacity:1;transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){ .reveal{opacity:1;transform:none;} }
+ 
+  /* ---------- logo placeholder ---------- */
+  .logo-slot{width:30px;height:30px;border-radius:9px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:var(--card);box-shadow:0 6px 14px var(--shadow-ink);flex-shrink:0;}
+  .logo-slot img{width:100%;height:100%;object-fit:cover;display:block;}
+  .logo-slot .logo-dark{display:none;}
+  html[data-theme='dark'] .logo-slot .logo-light{display:none;}
+  html[data-theme='dark'] .logo-slot .logo-dark{display:block;}
+  .logo-slot.logo-empty{border:1.5px dashed var(--line);box-shadow:none;background:transparent;}
+  .logo-slot.logo-empty::after{content:'';width:11px;height:11px;border-radius:3px;background:var(--ember);}
+  .logo-slot-lg{width:38px;height:38px;border-radius:11px;}
+ 
+  /* ---------- NAV ---------- */
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(244,243,240,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);transition:background .25s ease, border-color .25s ease;}
+  html[data-theme='dark'] header.nav{background:rgba(14,17,22,.85);}
+  .nav-inner{max-width:var(--maxw);margin:0 auto;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:21px;letter-spacing:-.01em;}
+  nav.links{display:flex;gap:26px;font-size:14.5px;}
+  nav.links a{position:relative;text-decoration:none;color:var(--ink-soft);padding:4px 0;}
+  nav.links a::after{content:'';position:absolute;left:0;right:100%;bottom:0;height:2px;background:var(--ember);transition:right .2s ease;}
+  nav.links a:hover{color:var(--ink);}
+  nav.links a:hover::after{right:0;}
+  .nav-right{display:flex;align-items:center;gap:12px;}
+  .theme-toggle{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--ink);transition:background .15s ease, transform .15s ease;box-sizing:border-box;}
+  .theme-toggle:hover{background:var(--card);transform:translateY(-1px);}
+  .theme-toggle .i-moon{display:none;}
+  html[data-theme='dark'] .theme-toggle .i-sun{display:none;}
+  html[data-theme='dark'] .theme-toggle .i-moon{display:block;}
+  .nav-cta{background:var(--ink);color:var(--paper);padding:9px 18px;border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;transition:transform .15s ease, box-shadow .15s ease;box-shadow:0 6px 16px var(--shadow-ink);}
+  .nav-cta:hover{transform:translateY(-2px);box-shadow:0 10px 22px var(--shadow-ink);}
+  @media (max-width:820px){ nav.links{display:none;} }
+ 
+  /* ---------- HERO ---------- */
+  .hero{padding:64px 0 40px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ember-deep);background:var(--ember-tint);border:1px solid rgba(239,134,0,.3);padding:6px 12px;border-radius:999px;margin-bottom:24px;}
+  .hero-top{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center;}
+  .hero h1{font-size:clamp(32px,4.6vw,52px);max-width:19ch;}
+  .hero-sub{margin-top:20px;font-size:17.5px;color:var(--ink-soft);max-width:52ch;}
+  .hero-sub b{color:var(--ink);font-weight:600;}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;}
+  .btn{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;padding:13px 22px;border-radius:10px;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;display:inline-flex;align-items:center;gap:8px;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-signal{background:var(--signal);color:var(--on-accent);box-shadow:0 6px 16px rgba(0,194,206,.3);}
+  .btn-signal:hover{box-shadow:0 12px 26px rgba(0,194,206,.4);}
+  .btn-ember{background:var(--ember);color:var(--on-accent);box-shadow:0 6px 16px rgba(239,134,0,.3);}
+  .btn-ember:hover{box-shadow:0 12px 26px rgba(239,134,0,.4);}
+  .btn-ghost{background:var(--card);color:var(--ink);border-color:var(--line);box-shadow:0 4px 12px var(--shadow-ink);}
+  .btn-ghost:hover{border-color:var(--ink-faint);}
+ 
+  /* hero photo placeholders */
+  .hero-photos{position:relative;height:360px;}
+  .photo-slot{position:absolute;border-radius:18px;overflow:hidden;box-shadow:0 22px 42px var(--shadow-ink);background:var(--card);border:1px solid var(--line);transition:transform .3s ease;}
+  .hero-photos:hover .photo-slot{transform:rotate(0deg) !important;}
+  .photo-slot img{width:100%;height:100%;object-fit:cover;display:block;}
+  .photo-slot.photo-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1.5px dashed var(--line);box-shadow:none;}
+  .photo-slot.photo-empty::before{content:'';width:30px;height:24px;border-radius:4px;border:2px solid var(--ink-faint);}
+  .photo-caption{display:none;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-faint);text-align:center;padding:0 14px;}
+  .photo-empty .photo-caption{display:block;}
+  .photo-a{width:74%;height:80%;top:0;right:0;transform:rotate(2.5deg);z-index:2;}
+  .photo-b{width:56%;height:50%;bottom:0;left:0;transform:rotate(-3deg);z-index:1;}
+  @media (max-width:900px){
+    .hero-top{grid-template-columns:1fr;}
+    .hero-photos{height:auto;display:flex;flex-direction:column;gap:14px;margin-top:8px;}
+    .photo-slot{position:static;width:100%;height:200px;transform:none !important;}
+  }
+ 
+  .stat-strip{margin-top:52px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);padding-top:26px;gap:22px;}
+  .stat{position:relative;transition:transform .2s ease;}
+  .stat:hover{transform:translateY(-3px);}
+  .stat-num-row{display:flex;align-items:baseline;gap:6px;}
+  .stat-num{font-size:28px;color:var(--ink);}
+  .stat-label{font-size:13px;color:var(--ink-soft);display:block;margin-top:5px;max-width:28ch;}
+  @media (max-width:700px){ .stat-strip{grid-template-columns:1fr;gap:20px;} }
+ 
+  /* source citation popover */
+  .src-details{display:inline-block;position:relative;}
+  .src-details summary{list-style:none;cursor:pointer;}
+  .src-details summary::-webkit-details-marker{display:none;}
+  .src-toggle{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--line);color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:10px;font-style:italic;transition:background .15s ease, color .15s ease;}
+  .src-details:hover .src-toggle, .src-details[open] .src-toggle{background:var(--ember);color:var(--on-accent);}
+  .src-note{position:absolute;top:calc(100% + 8px);left:0;z-index:20;width:260px;max-width:80vw;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px;box-shadow:0 16px 32px var(--shadow-ink);}
+  .src-note p{margin:0 0 8px;font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+  .src-note a{font-size:12px;font-weight:600;color:var(--ember-deep);text-decoration:none;}
+  .src-note a:hover{text-decoration:underline;}
+  .stat-strip .stat:last-child .src-note, .stat-strip .stat:nth-child(3) .src-note{left:auto;right:0;}
+  .val-wrap{position:relative;display:inline-flex;align-items:center;gap:6px;}
+  .val-wrap .src-note{top:calc(100% + 8px);left:auto;right:0;}
+ 
+  /* ---------- SIGNATURE DIAGRAM ---------- */
+  .diagram-wrap{margin-top:50px;border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px 18px 12px;transition:background .25s ease, border-color .25s ease;}
+  .diagram-cap{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px 4px;font-size:12.5px;color:var(--ink-faint);flex-wrap:wrap;gap:6px;}
+  .diagram-cap span.mono{color:var(--ink-soft);}
+  .node{transition:transform .2s ease;transform-box:fill-box;transform-origin:center;cursor:default;}
+  .node:hover{transform:scale(1.28);}
+  .theme-icon-dark{display:none;}
+  html[data-theme='dark'] .theme-icon-light{display:none;}
+  html[data-theme='dark'] .theme-icon-dark{display:block;}
+ 
+  /* ---------- SECTIONS ---------- */
+  section{padding:78px 0;border-top:1px solid var(--line);}
+  .section-head{max-width:64ch;margin-bottom:42px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ember-deep);margin-bottom:12px;display:block;}
+  .section-head h2{font-size:clamp(24px,3.1vw,34px);}
+  .section-head p{margin-top:14px;color:var(--ink-soft);font-size:16px;}
+ 
+  /* ranking */
+  .ranking-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .ranking-table th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);padding:14px 16px;border-bottom:1px solid var(--line);font-weight:500;}
+  .ranking-table td{padding:15px 16px;border-bottom:1px solid var(--line);font-size:14.5px;}
+  .ranking-table tbody tr{transition:background .15s ease;}
+  .ranking-table tbody tr:hover{background:var(--ember-tint);}
+  .ranking-table tbody tr:last-child td{border-bottom:none;}
+  .rk-pos{font-family:'IBM Plex Mono',monospace;color:var(--ink-faint);width:36px;}
+  .rk-kg{font-family:'IBM Plex Mono',monospace;font-weight:500;}
+  .ranking-empty{padding:40px 20px;text-align:center;color:var(--ink-soft);font-size:14.5px;border:1px dashed var(--line);border-radius:var(--radius);background:var(--card);}
+  .ranking-note{margin-top:16px;font-size:13px;color:var(--ink-faint);}
+ 
+  /* problema */
+  .problema-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start;}
+  .problema-grid p{color:var(--ink-soft);font-size:16px;margin:0 0 16px;}
+  .compare{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;}
+  .compare-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);transition:padding-left .15s ease;gap:12px;}
+  .compare-row:hover{padding-left:6px;}
+  .compare-row:last-child{border-bottom:none;}
+  .compare-row .lbl{font-size:14px;color:var(--ink-soft);}
+  .compare-row .val{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:16px;}
+  @media (max-width:820px){ .problema-grid{grid-template-columns:1fr;} }
+ 
+  /* timeline */
+  .timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .tl-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;}
+  .tl-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px var(--shadow-ink);}
+  .tl-card .yr{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ember-deep);font-weight:500;}
+  .tl-card h3{font-size:19px;margin-top:8px;}
+  .tl-card p{font-size:14.5px;color:var(--ink-soft);margin-top:10px;}
+  .tl-card.now{border-color:var(--signal);background:linear-gradient(180deg,var(--signal-tint),transparent 60%);}
+  .tl-card.now .yr{color:var(--signal-deep);}
+  @media (max-width:820px){ .timeline{grid-template-columns:1fr;} }
+ 
+  /* como funciona */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .step{border-top:2px solid var(--ink);padding-top:16px;transition:border-color .2s ease, transform .2s ease;}
+  .step:hover{border-color:var(--ember);transform:translateY(-3px);}
+  .step .num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-faint);}
+  .step h3{font-size:17px;margin-top:10px;}
+  .step p{font-size:14px;color:var(--ink-soft);margin-top:8px;}
+  @media (max-width:900px){ .steps{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .steps{grid-template-columns:1fr;} }
+ 
+  /* hierarquia */
+  .hier{display:flex;flex-direction:column;max-width:680px;}
+  .hier-row{display:grid;grid-template-columns:34px 1fr;gap:16px;padding:18px 12px;border-bottom:1px solid var(--line);align-items:start;border-radius:10px;transition:background .15s ease, padding-left .15s ease;}
+  .hier-row:hover{background:var(--card);padding-left:16px;}
+  .hier-row:first-child{padding-top:0;}
+  .hier-row .idx{font-family:'IBM Plex Mono',monospace;color:var(--signal-deep);font-size:13px;padding-top:3px;}
+  .hier-row h4{font-weight:700;font-size:17px;margin:0;}
+  .hier-row p{margin:5px 0 0;font-size:14px;color:var(--ink-soft);}
+  .hier-row.bottom h4{color:var(--ink-faint);}
+ 
+  /* indicadores */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .kpi{border:1px solid var(--line);border-radius:var(--radius);padding:20px;background:var(--card);transition:transform .2s ease, box-shadow .2s ease;}
+  .kpi:hover{transform:translateY(-4px);box-shadow:0 14px 30px var(--shadow-ink);}
+  .kpi .ic{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--signal-deep);text-transform:uppercase;letter-spacing:.05em;}
+  .kpi .kpi-num{font-size:28px;font-weight:700;margin-top:10px;}
+  .kpi p{font-size:13px;color:var(--ink-soft);margin-top:6px;}
+  @media (max-width:900px){ .kpis{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .kpis{grid-template-columns:1fr;} }
+ 
+  /* ---------- ACESSO ---------- */
+  .acesso-note{font-size:13.5px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:32px;max-width:74ch;}
+  .acesso-note b{color:var(--ink);}
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;}
+  @media (max-width:860px){ .panels{grid-template-columns:1fr;} }
+ 
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:box-shadow .2s ease;}
+  .panel:hover{box-shadow:0 18px 36px var(--shadow-ink);}
+  .panel-head{padding:24px 26px 18px;border-bottom:1px solid var(--line);}
+  .panel.entidade .panel-head{background:linear-gradient(180deg,var(--signal-tint),transparent);}
+  .panel.empresa .panel-head{background:linear-gradient(180deg,var(--ember-tint),transparent);}
+  .panel-tag{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;display:inline-block;margin-bottom:12px;color:var(--on-accent);}
+  .panel.entidade .panel-tag{background:var(--signal);}
+  .panel.empresa .panel-tag{background:var(--ember);}
+  .panel-head h3{font-size:22px;}
+  .panel-head p{font-size:14px;color:var(--ink-soft);margin-top:8px;}
+ 
+  .tabs{display:flex;gap:4px;padding:16px 26px 0;}
+  .tab-btn{flex:1;padding:10px 0;text-align:center;font-size:13.5px;font-weight:600;background:transparent;border:none;border-bottom:2px solid var(--line);color:var(--ink-faint);cursor:pointer;transition:color .15s ease, border-color .15s ease;}
+  .tab-btn:hover{color:var(--ink);}
+  .tab-btn.active{color:var(--ink);}
+  .panel.entidade .tab-btn.active{border-color:var(--signal);}
+  .panel.empresa .tab-btn.active{border-color:var(--ember);}
+ 
+  .panel-body{padding:22px 26px 26px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;font-weight:500;}
+  .field input, .field select{width:100%;padding:11px 12px;border-radius:8px;border:1px solid var(--line);background:var(--paper);font-family:'Space Grotesk',sans-serif;font-size:14.5px;color:var(--ink);transition:border-color .15s ease;}
+  .field input:focus, .field select:focus{border-color:var(--ink-faint);}
+  .field-row{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;}
+  @media (max-width:520px){ .field-row{grid-template-columns:1fr;} }
+ 
+  .panel-submit{width:100%;margin-top:6px;padding:13px 0;border-radius:10px;border:none;font-weight:600;font-size:14.5px;cursor:pointer;color:var(--on-accent);transition:transform .15s ease, box-shadow .15s ease;box-shadow:0 6px 16px var(--shadow-ink);}
+  .panel-submit:hover:not(:disabled){transform:translateY(-1px);}
+  .panel.entidade .panel-submit{background:var(--signal);}
+  .panel.empresa .panel-submit{background:var(--ember);}
+  .panel-submit:disabled{opacity:.6;cursor:progress;}
+ 
+  .form-msg{font-size:13px;margin-top:12px;padding:10px 12px;border-radius:8px;display:none;}
+  .form-msg.show{display:block;}
+  .form-msg.err{background:var(--ember-tint);color:var(--ember-deep);border:1px solid rgba(239,134,0,.3);}
+  .form-msg.ok{background:var(--signal-tint);color:var(--signal-deep);border:1px solid rgba(0,194,206,.3);}
+ 
+  .success{display:none;padding:6px 2px 2px;}
+  .success.show{display:block;}
+  .success .who{font-size:20px;font-weight:700;margin-bottom:6px;}
+  .success .meta{font-size:13.5px;color:var(--ink-soft);margin-bottom:16px;}
+  .mini-stats{display:flex;gap:18px;margin-bottom:16px;}
+  .mini-stats div{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 14px;flex:1;}
+  .mini-stats b{display:block;font-family:'IBM Plex Mono',monospace;font-size:18px;}
+  .mini-stats span{font-size:11.5px;color:var(--ink-soft);}
+  .donate-box{border:1px dashed var(--line);border-radius:10px;padding:16px;margin-bottom:14px;}
+  .donate-box h4{font-size:14px;margin-bottom:12px;}
+  .success .next{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:14px;font-size:13.5px;color:var(--ink-soft);}
+  .success .logout{margin-top:14px;background:none;border:none;text-decoration:underline;color:var(--ink-soft);font-size:13px;cursor:pointer;padding:0;}
+  .success .logout:hover{color:var(--ink);}
+ 
+  footer{padding:44px 0 60px;border-top:1px solid var(--line);}
+  .foot-grid{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--ink-faint);}
+  .foot-grid a{color:var(--ink-soft);text-decoration:none;}
+  .foot-grid a:hover{text-decoration:underline;color:var(--ink);}
+  .credit-line{display:flex;align-items:center;gap:10px;}
+  footer .credit{font-family:'IBM Plex Mono',monospace;font-size:12px;}
+</style>
+</head>
+<body>
+ 
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <span class="logo-slot">
+        <img class="logo-light" src="../Imagens/Elo preto.png" alt="Logotipo UpConnections">
+        <img class="logo-dark" src="../Imagens/Elo branco.png" alt="Logotipo UpConnections">
+      </span>
+      ELO
+    </div>
+    <nav class="links">
+      <a href="#ranking">Ranking</a>
+      <a href="#problema">O problema</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#acesso">Acesso</a>
+    </nav>
+    <div class="nav-right">
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Ativar modo escuro">
+        <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" fill="none"><circle cx="12" cy="12" r="5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/><line x1="4.2" y1="4.2" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.8" y2="19.8"/><line x1="4.2" y1="19.8" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.8" y2="4.2"/></g></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" fill="currentColor"/></svg>
+      </button>
+      <a class="nav-cta" href="#acesso">Acessar a rede</a>
+    </div>
+  </div>
+</header>
+ 
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="hero wrap" style="border-top:none;">
+    <span class="eyebrow">Desafio Escolas Inovadoras 2026 · HJ Tech × Lovable</span>
+ 
+    <div class="hero-top">
+      <div>
+        <h1>O que sobra de um lado pode ser exatamente o que falta do outro.</h1>
+        <p class="hero-sub"><b>ELO</b> é a rede que conecta, em qualquer cidade do Brasil, empresas com excedente de alimentos às instituições que atendem quem precisa. A Lei nº 15.224/2025 já abriu esse caminho — a ELO é a ferramenta que faltava para percorrê-lo.</p>
+        <div class="hero-actions">
+          <a class="btn btn-signal" href="#acesso">Sou uma entidade — quero receber</a>
+          <a class="btn btn-ember" href="#acesso">Sou uma empresa — quero doar</a>
+          <a class="btn btn-ghost" href="#como-funciona">Ver como funciona ↓</a>
+        </div>
+      </div>
+ 
+      <!-- photo placeholders: swap the src of each <img> for your own photos -->
+      <div class="hero-photos">
+        <div class="photo-slot photo-a photo-empty">
+          <img src="/Imagens/Imagen de demonstração 1.jpeg" alt="Foto: doação de alimentos sendo entregue" onerror="this.style.display='none';">
+          <span ex: entrega da doação </span>
+        </div>
+        <div class="photo-slot photo-b photo-empty">
+          <img src="/Imagens/Imagen de demonstração 2.jpeg" alt="Foto: voluntários organizando alimentos doados" onerror="this.style.display='none';">
+          <spanex: voluntários organizando alimentos doados</span>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="stat-strip">
+      <div class="stat">
+        <div class="stat-num-row">
+          <b class="mono stat-num">≈46 mi t</b>
+          <details class="src-details">
+            <summary class="src-toggle" aria-label="Ver fonte do dado">i</summary>
+            <div class="src-note">
+              <p>IBGE, citado pela CNN Brasil (nov. 2024): o Brasil desperdiça cerca de 46 milhões de toneladas de alimentos por ano — 30% de tudo o que produz.</p>
+              <a href="https://www.cnnbrasil.com.br/nacional/brasil-descarta-30-dos-alimentos-produzidos-diz-onu/" target="_blank" rel="noopener">Ver fonte ↗</a>
+            </div>
+          </details>
+        </div>
+        <span class="stat-label">de alimentos desperdiçados no Brasil todo ano — cerca de 30% de tudo que produzimos</span>
+      </div>
+      <div class="stat">
+        <div class="stat-num-row">
+          <b class="mono stat-num">24,2%</b>
+          <details class="src-details">
+            <summary class="src-toggle" aria-label="Ver fonte do dado">i</summary>
+            <div class="src-note">
+              <p>IBGE — PNAD Contínua, módulo Segurança Alimentar (2024): 18,9 milhões de domicílios brasileiros conviviam com algum grau de insegurança alimentar.</p>
+              <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/44728-mais-de-dois-milhoes-de-lares-saem-da-inseguranca-alimentar-em-2024" target="_blank" rel="noopener">Ver fonte ↗</a>
+            </div>
+          </details>
+        </div>
+        <span class="stat-label">dos domicílios brasileiros conviviam com algum grau de insegurança alimentar em 2024</span>
+      </div>
+      <div class="stat">
+        <div class="stat-num-row">
+          <b class="mono stat-num">10º</b>
+          <details class="src-details">
+            <summary class="src-toggle" aria-label="Ver fonte do dado">i</summary>
+            <div class="src-note">
+              <p>ONU, citada pela CNN Brasil (nov. 2024): o Brasil ocupa a 10ª posição entre os países que mais desperdiçam alimentos no mundo.</p>
+              <a href="https://www.cnnbrasil.com.br/nacional/brasil-descarta-30-dos-alimentos-produzidos-diz-onu/" target="_blank" rel="noopener">Ver fonte ↗</a>
+            </div>
+          </details>
+        </div>
+        <span class="stat-label">posição do Brasil no ranking mundial de países que mais desperdiçam comida</span>
+      </div>
+    </div>
+ 
+    <!-- signature: markets <-> institutions network, echoing the brand's connected-dots-arrow symbol -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 800 350" role="img" aria-labelledby="diagTitle diagDesc">
+        <title id="diagTitle">Diagrama da rede ELO</title>
+        <desc id="diagDesc">Mercados, restaurantes, indústrias e produtores de um lado; bancos de alimentos, ONGs, abrigos e igrejas do outro — conectados pela plataforma.</desc>
+ 
+        <defs>
+          <path id="pathL1" d="M 160 55 C 260 85, 330 125, 400 175"/>
+          <path id="pathL4" d="M 160 295 C 260 260, 330 220, 400 175"/>
+          <path id="pathR1" d="M 400 175 C 470 125, 540 85, 640 55"/>
+          <path id="pathR4" d="M 400 175 C 470 220, 540 260, 640 295"/>
+          <clipPath id="donorIconClip">
+            <rect x="-22" y="-22" width="44" height="44" rx="8"/>
+          </clipPath>
+        </defs>
+ 
+        <g fill="none" stroke-width="1.4">
+          <path d="M 160 55 C 260 85, 330 125, 400 175" style="stroke:var(--line)"/>
+          <path d="M 160 135 C 260 140, 330 155, 400 175" style="stroke:var(--line)"/>
+          <path d="M 160 215 C 260 205, 330 190, 400 175" style="stroke:var(--line)"/>
+          <path d="M 160 295 C 260 260, 330 220, 400 175" style="stroke:var(--line)"/>
+          <path d="M 400 175 C 470 125, 540 85, 640 55" style="stroke:var(--line)"/>
+          <path d="M 400 175 C 470 155, 540 140, 640 135" style="stroke:var(--line)"/>
+          <path d="M 400 175 C 470 190, 540 205, 640 215" style="stroke:var(--line)"/>
+          <path d="M 400 175 C 470 220, 540 260, 640 295" style="stroke:var(--line)"/>
+        </g>
+ 
+        <!-- left icons: doadores -->
+        <g class="node" transform="translate(160,55)">
+          <image class="theme-icon-light" x="-22" y="-22" width="44" height="44" href="../Imagens/Cesta preta.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+          <image class="theme-icon-dark" x="-22" y="-22" width="44" height="44" href="../Imagens/Cesta branca.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+        </g>
+        <g class="node" transform="translate(160,135)">
+          <image class="theme-icon-light" x="-22" y="-22" width="44" height="44" href="../Imagens/Garfo preto.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+          <image class="theme-icon-dark" x="-22" y="-22" width="44" height="44" href="../Imagens/Garfo branco.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+        </g>
+        <g class="node" transform="translate(160,215)">
+          <image class="theme-icon-light" x="-22" y="-22" width="44" height="44" href="../Imagens/industria preto.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+          <image class="theme-icon-dark" x="-22" y="-22" width="44" height="44" href="../Imagens/Industria Branco.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+        </g>
+        <g class="node" transform="translate(160,295)">
+          <image class="theme-icon-light" x="-22" y="-22" width="44" height="44" href="../Imagens/Trator branco.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+          <image class="theme-icon-dark" x="-22" y="-22" width="44" height="44" href="../Imagens/Trator Preto.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+        </g>
+ 
+        <!-- right icons: receptores -->
+        <g class="node" transform="translate(640,55)">
+          <image class="theme-icon-light" x="-22" y="-22" width="44" height="44" href="../Imagens/Banco de alimento preto.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+          <image class="theme-icon-dark" x="-22" y="-22" width="44" height="44" href="../Imagens/Banco de alimentos Branco.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+        </g>
+        <g class="node" transform="translate(640,135)">
+          <image class="theme-icon-light" x="-22" y="-22" width="44" height="44" href="../Imagens/Ong preto.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+          <image class="theme-icon-dark" x="-22" y="-22" width="44" height="44" href="../Imagens/Ong Branco.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+        </g>
+        <g class="node" transform="translate(640,215)">
+          <image class="theme-icon-light" x="-22" y="-22" width="44" height="44" href="../Imagens/Abrigo preto.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+          <image class="theme-icon-dark" x="-22" y="-22" width="44" height="44" href="../Imagens/Abrigo Branco.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+        </g>
+        <g class="node" transform="translate(640,295)">
+          <image class="theme-icon-light" x="-22" y="-22" width="44" height="44" href="../Imagens/Igreja preta.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+          <image class="theme-icon-dark" x="-22" y="-22" width="44" height="44" href="../Imagens/igreja branca.png" preserveAspectRatio="xMidYMid meet" clip-path="url(#donorIconClip)"/>
+        </g>
+ 
+        <!-- labels: outer side of each icon, away from the connecting lines -->
+        <g font-family="IBM Plex Mono, monospace" font-size="12" style="fill:var(--ink-soft)" text-anchor="end">
+          <text x="136" y="51">Mercados</text><text x="136" y="64" font-size="10.5" style="fill:var(--ink-faint)">e mercearias</text>
+          <text x="136" y="131">Restaurantes</text><text x="136" y="144" font-size="10.5" style="fill:var(--ink-faint)">e lanchonetes</text>
+          <text x="136" y="211">Indústrias</text><text x="136" y="224" font-size="10.5" style="fill:var(--ink-faint)">de alimentos</text>
+          <text x="136" y="291">Produtores</text><text x="136" y="304" font-size="10.5" style="fill:var(--ink-faint)">rurais</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="12" style="fill:var(--ink-soft)" text-anchor="start">
+          <text x="664" y="51">Bancos de</text><text x="664" y="64" font-size="10.5" style="fill:var(--ink-faint)">alimentos</text>
+          <text x="664" y="131">ONGs e</text><text x="664" y="144" font-size="10.5" style="fill:var(--ink-faint)">associações</text>
+          <text x="664" y="211">Abrigos</text>
+          <text x="664" y="291">Igrejas e</text><text x="664" y="304" font-size="10.5" style="fill:var(--ink-faint)">pastorais</text>
+        </g>
+ 
+        <!-- hub -->
+        <circle cx="400" cy="175" r="36" fill="none" style="stroke:var(--line)" stroke-width="1.5"/>
+        <circle cx="400" cy="175" r="29" style="fill:var(--ink)"/>
+        <path d="M 391 184 L 409 166" style="stroke:var(--paper)" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+        <path d="M 409 166 L 409 174 M 409 166 L 401 166" style="stroke:var(--paper)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <text x="400" y="223" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="14" style="fill:var(--ink)">ELO</text>
+ 
+        <!-- pulses -->
+        <circle r="4" style="fill:var(--ember)"><animateMotion dur="4.6s" repeatCount="indefinite"><mpath href="#pathL1"/></animateMotion></circle>
+        <circle r="4" style="fill:var(--ember)"><animateMotion dur="5.2s" begin="1.4s" repeatCount="indefinite"><mpath href="#pathL4"/></animateMotion></circle>
+        <circle r="4" style="fill:var(--signal)"><animateMotion dur="4.6s" begin=".7s" repeatCount="indefinite"><mpath href="#pathR1"/></animateMotion></circle>
+        <circle r="4" style="fill:var(--signal)"><animateMotion dur="5.2s" begin="2.1s" repeatCount="indefinite"><mpath href="#pathR4"/></animateMotion></circle>
+      </svg>
+      <div class="diagram-cap">
+        <span>Esquema ilustrativo — os ícones representam categorias, não empresas ou instituições reais</span>
+        <span class="mono">quem doa ↔ ELO ↔ quem recebe</span>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ================= RANKING ================= -->
+  <section id="ranking" class="wrap reveal">
+    <div class="section-head">
+      <span class="kicker">01 · Ranking de impacto</span>
+      <h2>Quem está doando mais para a própria comunidade.</h2>
+      <p>Toda doação registrada por uma empresa parceira entra automaticamente aqui. O ranking é público e atualizado em tempo real — pense nele como um placar nacional de generosidade.</p>
+    </div>
+ 
+    <table class="ranking-table" id="ranking-table">
+      <thead>
+        <tr><th>#</th><th>Empresa</th><th>Cidade/UF</th><th>Setor</th><th>Kg doados</th><th>Doações</th></tr>
+      </thead>
+      <tbody id="ranking-body"></tbody>
+    </table>
+    <div class="ranking-empty" id="ranking-empty" style="display:none;">
+      Ainda não há doações registradas nesta demonstração. Cadastre-se como empresa lá embaixo e seja a primeira do ranking nacional.
+    </div>
+    <p class="ranking-note">Empresas que doam com regularidade também podem solicitar, do governo federal, o Selo Doador de Alimentos criado pela Lei nº 15.224/2025.</p>
+  </section>
+ 
+  <!-- ================= PROBLEMA ================= -->
+  <section id="problema" class="wrap reveal">
+    <div class="section-head">
+      <span class="kicker">02 · O problema</span>
+      <h2>Um país que alimenta o mundo — e ainda desperdiça muito pelo caminho.</h2>
+    </div>
+    <div class="problema-grid">
+      <div>
+        <p>O Brasil é o 5º maior produtor mundial de alimentos, mas está entre os 10 países que mais desperdiçam comida do planeta, segundo dados da ONU e da FAO. O problema não é falta de comida: é a falta de conexão entre quem tem excedente e quem poderia recebê-lo a tempo, com segurança.</p>
+        <p>Enquanto toneladas de alimento próprio para consumo são descartadas todos os dias — em mercados, restaurantes, indústrias e no campo — quase um quarto dos lares brasileiros ainda convive com algum grau de insegurança alimentar. Fechar essa distância é o trabalho da ELO.</p>
+      </div>
+      <div class="compare">
+        <div class="compare-row">
+          <span class="lbl">Alimento desperdiçado no Brasil por ano</span>
+          <span class="val-wrap">
+            <span class="val mono">≈46 mi t</span>
+            <details class="src-details">
+              <summary class="src-toggle" aria-label="Ver fonte do dado">i</summary>
+              <div class="src-note">
+                <p>IBGE, citado pela CNN Brasil (nov. 2024).</p>
+                <a href="https://www.cnnbrasil.com.br/nacional/brasil-descarta-30-dos-alimentos-produzidos-diz-onu/" target="_blank" rel="noopener">Ver fonte ↗</a>
+              </div>
+            </details>
+          </span>
+        </div>
+        <div class="compare-row">
+          <span class="lbl">Parcela da produção nacional desperdiçada</span>
+          <span class="val-wrap">
+            <span class="val mono">≈30%</span>
+            <details class="src-details">
+              <summary class="src-toggle" aria-label="Ver fonte do dado">i</summary>
+              <div class="src-note">
+                <p>IBGE, citado pela CNN Brasil (nov. 2024).</p>
+                <a href="https://www.cnnbrasil.com.br/nacional/brasil-descarta-30-dos-alimentos-produzidos-diz-onu/" target="_blank" rel="noopener">Ver fonte ↗</a>
+              </div>
+            </details>
+          </span>
+        </div>
+        <div class="compare-row">
+          <span class="lbl">Domicílios c/ insegurança alimentar (2024)</span>
+          <span class="val-wrap">
+            <span class="val mono">24,2%</span>
+            <details class="src-details">
+              <summary class="src-toggle" aria-label="Ver fonte do dado">i</summary>
+              <div class="src-note">
+                <p>IBGE — PNAD Contínua, módulo Segurança Alimentar (2024).</p>
+                <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/44728-mais-de-dois-milhoes-de-lares-saem-da-inseguranca-alimentar-em-2024" target="_blank" rel="noopener">Ver fonte ↗</a>
+              </div>
+            </details>
+          </span>
+        </div>
+        <div class="compare-row">
+          <span class="lbl">Posição do Brasil no ranking mundial de desperdício</span>
+          <span class="val-wrap">
+            <span class="val mono">10º</span>
+            <details class="src-details">
+              <summary class="src-toggle" aria-label="Ver fonte do dado">i</summary>
+              <div class="src-note">
+                <p>ONU, citada pela CNN Brasil (nov. 2024).</p>
+                <a href="https://www.cnnbrasil.com.br/nacional/brasil-descarta-30-dos-alimentos-produzidos-diz-onu/" target="_blank" rel="noopener">Ver fonte ↗</a>
+              </div>
+            </details>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ================= DE ONDE VEM A IDEIA ================= -->
+  <section class="wrap reveal">
+    <div class="section-head">
+      <span class="kicker">03 · De onde vem a ideia</span>
+      <h2>A lei já aponta o caminho. Faltava quem construísse a ponte.</h2>
+      <p>A Lei nº 15.224/2025, que criou a Política Nacional de Combate à Perda e ao Desperdício de Alimentos, chega a citar, entre seus princípios, a importância de aplicativos e sites que aproximem diretamente quem quer doar de quem quer receber. A lei abre a porta — mas não constrói a ferramenta. É aí que entra a ELO.</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-card">
+        <span class="yr">Ponto de partida</span>
+        <h3>O problema</h3>
+        <p>Comida sobra numa ponta da cadeia enquanto famílias passam necessidade na outra — um descompasso logístico, não de produção.</p>
+      </div>
+      <div class="tl-card">
+        <span class="yr">2025 · Lei nº 15.224</span>
+        <h3>O que ela garante — e onde ela para</h3>
+        <p>Protege juridicamente quem doa de boa-fé, cria o Selo Doador de Alimentos e autoriza incentivos fiscais — mas depende de regulamentação futura, de adesão voluntária de cada estabelecimento e de verba disponível para sair do papel.</p>
+      </div>
+      <div class="tl-card now">
+        <span class="yr">Agora</span>
+        <h3>ELO</h3>
+        <p>A plataforma que transforma o princípio da lei em prática: conectar quem doa e quem recebe, de verdade, em qualquer cidade do Brasil.</p>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ================= COMO FUNCIONA ================= -->
+  <section id="como-funciona" class="wrap reveal">
+    <div class="section-head">
+      <span class="kicker">04 · Como funciona</span>
+      <h2>Do excedente ao prato, em quatro passos.</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>Empresa cadastra o excedente</h3>
+        <p>Tipo de alimento, quantidade estimada, condição (in natura, preparado ou embalado) e prazo para retirada — já dentro das normas sanitárias exigidas por lei.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>Entidade vê e reserva</h3>
+        <p>A instituição cadastrada mais próxima visualiza o que está disponível na sua cidade e confirma o interesse antes que o prazo se esgote.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>Combinam a retirada</h3>
+        <p>Empresa e entidade combinam local e horário diretamente, pelo contato já cadastrado — sem intermediários nem burocracia extra.</p>
+      </div>
+      <div class="step">
+        <span class="num">04</span>
+        <h3>Registram o impacto</h3>
+        <p>Os quilos doados entram no ranking da empresa e nos indicadores públicos da rede — histórico que ajuda a embasar o pedido do Selo Doador de Alimentos.</p>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ================= HIERARQUIA ================= -->
+  <section class="wrap reveal">
+    <div class="section-head">
+      <span class="kicker">05 · O que vira o quê</span>
+      <h2>Nem tudo que sobra é lixo — e a lei já diz a ordem certa.</h2>
+      <p>A Lei nº 15.224/2025 estabelece uma ordem de prioridade para o destino de cada alimento excedente. A ELO segue essa mesma lógica.</p>
+    </div>
+    <div class="hier">
+      <div class="hier-row">
+        <span class="idx">01</span>
+        <div><h4>Prevenir</h4><p>Planejar compras, produção e estoque para gerar menos sobra desde o início da cadeia.</p></div>
+      </div>
+      <div class="hier-row">
+        <span class="idx">02</span>
+        <div><h4>Doar para consumo humano</h4><p>Prioridade da lei: alimento próprio para consumo vai primeiro para pessoas, através de bancos de alimentos, ONGs, abrigos e igrejas cadastrados na rede.</p></div>
+      </div>
+      <div class="hier-row">
+        <span class="idx">03</span>
+        <div><h4>Alimentar animais</h4><p>Quando o alimento já não pode ser consumido por pessoas — passou do ponto ideal, tem defeito estético ou sobrou do processamento — mas ainda é seguro para consumo animal, ele pode virar ração.</p></div>
+      </div>
+      <div class="hier-row bottom">
+        <span class="idx">04</span>
+        <div><h4>Compostar ou gerar energia</h4><p>Só quando o alimento não serve mais nem para consumo humano nem animal — mofado, contaminado ou misturado a outros resíduos — ele vai para compostagem agrícola ou produção de biomassa para energia.</p></div>
+      </div>
+      <div class="hier-row bottom">
+        <span class="idx">05</span>
+        <div><h4>Descartar</h4><p>Só depois de esgotadas todas as opções acima — o último recurso, nunca o primeiro.</p></div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ================= INDICADORES ================= -->
+  <section class="wrap reveal">
+    <div class="section-head">
+      <span class="kicker">06 · Indicadores da rede</span>
+      <h2>O que a rede já está medindo.</h2>
+      <p>Números reais desta demonstração, somados a cada novo cadastro e a cada doação registrada.</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span class="ic">Kg</span><div class="kpi-num mono" id="kpi-kg">0</div><p>evitados do descarte</p></div>
+      <div class="kpi"><span class="ic">Doações</span><div class="kpi-num mono" id="kpi-doacoes">0</div><p>registradas na rede</p></div>
+      <div class="kpi"><span class="ic">Entidades</span><div class="kpi-num mono" id="kpi-entidades">0</div><p>cadastradas para receber</p></div>
+      <div class="kpi"><span class="ic">Empresas</span><div class="kpi-num mono" id="kpi-empresas">0</div><p>parceiras cadastradas</p></div>
+    </div>
+  </section>
+ 
+  <!-- ================= ACESSO ================= -->
+  <section id="acesso" class="wrap reveal">
+    <div class="section-head">
+      <span class="kicker">07 · Acesso à rede</span>
+      <h2>Entre ou cadastre-se.</h2>
+    </div>
+    <p class="acesso-note"><b>Nota do protótipo:</b> este é o MVP do Desafio Escolas Inovadoras. Os cadastros abaixo já salvam de verdade, para a banca poder testar o fluxo — mas ficam guardados de forma simples, sem criptografia, e visíveis a quem estiver testando a página ao mesmo tempo. Não use senhas reais.</p>
+ 
+    <div class="panels">
+      <!-- ENTIDADE -->
+      <div class="panel entidade" data-role="entidade">
+        <div class="panel-head">
+          <span class="panel-tag">Para quem recebe</span>
+          <h3>Entidade beneficente</h3>
+          <p>Bancos de alimentos, ONGs, igrejas, abrigos e associações que recebem doações.</p>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="login">Entrar</button>
+          <button class="tab-btn" data-tab="cadastro">Cadastrar</button>
+        </div>
+        <div class="panel-body">
+ 
+          <form data-form="entidade-login" data-view="login">
+            <div class="field"><label for="ent-log-email">E-mail</label><input id="ent-log-email" type="email" required autocomplete="email"></div>
+            <div class="field"><label for="ent-log-senha">Senha</label><input id="ent-log-senha" type="password" required autocomplete="current-password"></div>
+            <button class="panel-submit" type="submit">Entrar</button>
+            <div class="form-msg"></div>
+          </form>
+ 
+          <form data-form="entidade-cadastro" data-view="cadastro" style="display:none;">
+            <div class="field"><label for="ent-nome">Nome da entidade</label><input id="ent-nome" type="text" required></div>
+            <div class="field">
+              <label for="ent-tipo">Tipo</label>
+              <select id="ent-tipo" required>
+                <option value="">Selecione</option>
+                <option>Banco de alimentos</option><option>ONG / Associação social</option>
+                <option>Igreja / Pastoral</option><option>Abrigo / Casa de acolhimento</option>
+                <option>Escola / Creche</option><option>Outro</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field"><label for="ent-cidade">Cidade</label><input id="ent-cidade" type="text" required></div>
+              <div class="field"><label for="ent-uf">UF</label>
+                <select id="ent-uf" required><option value="">--</option>
+                  <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+                </select>
+              </div>
+            </div>
+            <div class="field"><label for="ent-resp">Responsável</label><input id="ent-resp" type="text" required></div>
+            <div class="field"><label for="ent-email">E-mail</label><input id="ent-email" type="email" required autocomplete="email"></div>
+            <div class="field"><label for="ent-senha">Senha</label><input id="ent-senha" type="password" required minlength="4" autocomplete="new-password"></div>
+            <button class="panel-submit" type="submit">Cadastrar entidade</button>
+            <div class="form-msg"></div>
+          </form>
+ 
+          <div class="success">
+            <div class="who"></div>
+            <div class="meta"></div>
+            <div class="next">Próxima etapa do MVP: painel com os excedentes disponíveis perto de você, para reservar em um clique.</div>
+            <button class="logout" type="button">Sair e testar outra conta →</button>
+          </div>
+ 
+        </div>
+      </div>
+ 
+      <!-- EMPRESA -->
+      <div class="panel empresa" data-role="empresa">
+        <div class="panel-head">
+          <span class="panel-tag">Para quem doa</span>
+          <h3>Empresa doadora</h3>
+          <p>Mercados, restaurantes, padarias, indústrias e produtores com excedente de alimentos.</p>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="login">Entrar</button>
+          <button class="tab-btn" data-tab="cadastro">Cadastrar</button>
+        </div>
+        <div class="panel-body">
+ 
+          <form data-form="empresa-login" data-view="login">
+            <div class="field"><label for="emp-log-email">E-mail</label><input id="emp-log-email" type="email" required autocomplete="email"></div>
+            <div class="field"><label for="emp-log-senha">Senha</label><input id="emp-log-senha" type="password" required autocomplete="current-password"></div>
+            <button class="panel-submit" type="submit">Entrar</button>
+            <div class="form-msg"></div>
+          </form>
+ 
+          <form data-form="empresa-cadastro" data-view="cadastro" style="display:none;">
+            <div class="field"><label for="emp-nome">Nome da empresa</label><input id="emp-nome" type="text" required></div>
+            <div class="field">
+              <label for="emp-setor">Setor</label>
+              <select id="emp-setor" required>
+                <option value="">Selecione</option>
+                <option>Supermercado / Mercearia</option><option>Restaurante / Lanchonete</option>
+                <option>Padaria / Panificadora</option><option>Indústria de alimentos</option>
+                <option>Produtor rural / Agricultura familiar</option><option>Outro</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field"><label for="emp-cidade">Cidade</label><input id="emp-cidade" type="text" required></div>
+              <div class="field"><label for="emp-uf">UF</label>
+                <select id="emp-uf" required><option value="">--</option>
+                  <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+                </select>
+              </div>
+            </div>
+            <div class="field"><label for="emp-resp">Responsável</label><input id="emp-resp" type="text" required></div>
+            <div class="field"><label for="emp-email">E-mail</label><input id="emp-email" type="email" required autocomplete="email"></div>
+            <div class="field"><label for="emp-senha">Senha</label><input id="emp-senha" type="password" required minlength="4" autocomplete="new-password"></div>
+            <button class="panel-submit" type="submit">Cadastrar empresa</button>
+            <div class="form-msg"></div>
+          </form>
+ 
+          <div class="success">
+            <div class="who"></div>
+            <div class="meta"></div>
+            <div class="mini-stats">
+              <div><b class="mini-kg mono">0</b><span>kg doados</span></div>
+              <div><b class="mini-count mono">0</b><span>doações</span></div>
+            </div>
+            <div class="donate-box">
+              <h4>Registrar uma doação</h4>
+              <form class="donate-form">
+                <div class="field-row">
+                  <div class="field"><label for="don-tipo">Tipo de alimento</label>
+                    <select id="don-tipo" required>
+                      <option value="">Selecione</option>
+                      <option>In natura (frutas, verduras, legumes)</option>
+                      <option>Padaria / panificados</option>
+                      <option>Preparado (refeições, marmitas)</option>
+                      <option>Embalado / não perecível</option>
+                      <option>Outro</option>
+                    </select>
+                  </div>
+                  <div class="field"><label for="don-kg">Quantidade (kg)</label><input id="don-kg" type="number" min="0.1" step="0.1" required></div>
+                </div>
+                <button class="panel-submit" type="submit" style="background:var(--ember);">Registrar doação</button>
+                <div class="form-msg"></div>
+              </form>
+            </div>
+            <div class="next">Próxima etapa do MVP: tela para cadastrar cada excedente e ver, em tempo real, qual entidade reservou.</div>
+            <button class="logout" type="button">Sair e testar outra conta →</button>
+          </div>
+ 
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+ 
+<footer class="wrap">
+  <div class="foot-grid">
+    <div>
+      <div class="credit-line">
+        <span class="logo-slot logo-slot-lg">
+          <img class="logo-light" src="../Imagens/Elo preto.png" alt="Logotipo UpConnections">
+          <img class="logo-dark" src="../Imagens/Elo branco.png" alt="Logotipo UpConnections">
+        </span>
+        <div>
+          <div class="credit">ELO — UpConnections · Escola SESI</div>
+          <div style="margin-top:6px;">Protótipo para o Desafio Escolas Inovadoras 2026 (HJ Tech × Lovable) · Eixo Cidade Viva / Impacto e Inclusão</div>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:340px;">
+      Baseado na <a href="https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15224.htm" target="_blank" rel="noopener">Lei nº 15.224/2025</a>, que institui a Política Nacional de Combate à Perda e ao Desperdício de Alimentos.
+    </div>
+  </div>
+</footer>
+ 
+<script>
+(function(){
+  /* ---------- theme ---------- */
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('theme-toggle');
+ 
+  function applyTheme(theme){
+    root.setAttribute('data-theme', theme);
+    themeBtn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro');
+  }
+ 
+  (async function initTheme(){
+    let saved = null;
+    try{ const res = await window.storage.get('elo:theme', false); saved = res ? res.value : null; }catch(e){}
+    if (saved === 'dark' || saved === 'light'){ applyTheme(saved); }
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches){ applyTheme('dark'); }
+    else { applyTheme('light'); }
+  })();
+ 
+  themeBtn.addEventListener('click', async function(){
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try{ await window.storage.set('elo:theme', next, false); }catch(e){}
+  });
+ 
+  /* ---------- reduced motion for the SVG pulses ---------- */
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.querySelectorAll('animateMotion').forEach(function(el){ el.setAttribute('repeatCount','0'); });
+  }
+ 
+  /* ---------- reveal on scroll ---------- */
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){ entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+      });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in-view'); });
+  }
+ 
+  /* close an open source popover when another one opens */
+  document.querySelectorAll('.src-details').forEach(function(d){
+    d.addEventListener('toggle', function(){
+      if (d.open){
+        document.querySelectorAll('.src-details[open]').forEach(function(other){
+          if (other !== d) other.removeAttribute('open');
+        });
+      }
+    });
+  });
+ 
+  /* ---------- storage helpers ---------- */
+  const EMP_PREFIX = 'elo:empresa:';
+  const ENT_PREFIX = 'elo:entidade:';
+ 
+  function slug(email){ return String(email).trim().toLowerCase().replace(/[^a-z0-9@._-]/g,''); }
+  function fmt(n){ return Number(n||0).toLocaleString('pt-BR', {maximumFractionDigits:1}); }
+ 
+  async function storageGet(key){
+    try{ const res = await window.storage.get(key, true); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  async function storageSet(key, value){
+    try{ await window.storage.set(key, value, true); return true; }
+    catch(e){ return false; }
+  }
+  async function storageList(prefix){
+    try{ const res = await window.storage.list(prefix, true); return (res && res.keys) ? res.keys : []; }
+    catch(e){ return []; }
+  }
+ 
+  async function getAllRecords(prefix){
+    const keys = await storageList(prefix);
+    const out = [];
+    for (const key of keys){
+      const raw = await storageGet(key);
+      if (!raw) continue;
+      try{ out.push({ key: key, data: JSON.parse(raw) }); }catch(e){}
+    }
+    return out;
+  }
+ 
+  /* ---------- ranking + kpis ---------- */
+  async function renderRanking(){
+    const empresas = await getAllRecords(EMP_PREFIX);
+    const body = document.getElementById('ranking-body');
+    const table = document.getElementById('ranking-table');
+    const empty = document.getElementById('ranking-empty');
+    const sorted = empresas
+      .filter(function(e){ return (e.data.kgDoado || 0) > 0; })
+      .sort(function(a,b){ return (b.data.kgDoado||0) - (a.data.kgDoado||0); })
+      .slice(0,5);
+ 
+    if (sorted.length === 0){
+      table.style.display = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+    table.style.display = 'table';
+    empty.style.display = 'none';
+    body.innerHTML = sorted.map(function(e, i){
+      const d = e.data;
+      return '<tr><td class="rk-pos mono">'+(i+1)+'</td><td>'+escapeHtml(d.nome||'—')+'</td><td>'+escapeHtml((d.cidade||'—')+'/'+(d.uf||'—'))+'</td><td>'+escapeHtml(d.setor||'—')+'</td><td class="rk-kg">'+fmt(d.kgDoado)+' kg</td><td class="mono">'+(d.doacoes||0)+'</td></tr>';
+    }).join('');
+  }
+ 
+  async function renderIndicadores(){
+    const empresas = await getAllRecords(EMP_PREFIX);
+    const entidades = await getAllRecords(ENT_PREFIX);
+    let kg = 0, doacoes = 0;
+    empresas.forEach(function(e){ kg += (e.data.kgDoado||0); doacoes += (e.data.doacoes||0); });
+    document.getElementById('kpi-kg').textContent = fmt(kg);
+    document.getElementById('kpi-doacoes').textContent = doacoes;
+    document.getElementById('kpi-entidades').textContent = entidades.length;
+    document.getElementById('kpi-empresas').textContent = empresas.length;
+  }
+ 
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+ 
+  async function refreshAll(){ await renderRanking(); await renderIndicadores(); }
+  refreshAll();
+ 
+  /* ---------- access panels ---------- */
+  document.querySelectorAll('.panel').forEach(function(panel){
+    const role = panel.getAttribute('data-role');
+    const prefix = role === 'entidade' ? ENT_PREFIX : EMP_PREFIX;
+    const tabs = panel.querySelectorAll('.tab-btn');
+    const forms = panel.querySelectorAll(':scope > .panel-body > form');
+    const success = panel.querySelector('.success');
+    let currentKey = null;
+ 
+    tabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        tabs.forEach(function(t){ t.classList.remove('active'); });
+        tab.classList.add('active');
+        const which = tab.getAttribute('data-tab');
+        forms.forEach(function(f){
+          f.style.display = (f.getAttribute('data-view') === which) ? 'block' : 'none';
+          const msg = f.querySelector('.form-msg');
+          if (msg){ msg.className = 'form-msg'; msg.textContent = ''; }
+        });
+        success.classList.remove('show');
+        panel.querySelector('.tabs').style.display = 'flex';
+      });
+    });
+ 
+    function showSuccess(record, key){
+      currentKey = key;
+      panel.querySelector('.tabs').style.display = 'none';
+      forms.forEach(function(f){ f.style.display = 'none'; });
+      success.querySelector('.who').textContent = 'Bem-vinda(o), ' + record.nome;
+      const label = role === 'entidade' ? record.tipo : record.setor;
+      success.querySelector('.meta').textContent = label + ' — ' + record.cidade + '/' + record.uf;
+ 
+      if (role === 'empresa'){
+        success.querySelector('.mini-kg').textContent = fmt(record.kgDoado);
+        success.querySelector('.mini-count').textContent = record.doacoes || 0;
+      }
+      success.classList.add('show');
+    }
+ 
+    success.querySelector('.logout').addEventListener('click', function(){
+      success.classList.remove('show');
+      currentKey = null;
+      panel.querySelector('.tabs').style.display = 'flex';
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+      tabs[0].classList.add('active');
+      forms.forEach(function(f){ f.style.display = f.getAttribute('data-view') === 'login' ? 'block' : 'none'; f.reset(); });
+    });
+ 
+    /* LOGIN */
+    const loginForm = panel.querySelector('form[data-view="login"]');
+    loginForm.addEventListener('submit', async function(e){
+      e.preventDefault();
+      const msg = loginForm.querySelector('.form-msg');
+      const btn = loginForm.querySelector('.panel-submit');
+      const email = loginForm.querySelector('input[type="email"]').value;
+      const senha = loginForm.querySelector('input[type="password"]').value;
+      msg.className = 'form-msg'; msg.textContent = '';
+      btn.disabled = true; btn.textContent = 'Entrando…';
+ 
+      const key = prefix + slug(email);
+      const raw = await storageGet(key);
+      btn.disabled = false; btn.textContent = 'Entrar';
+ 
+      if (!raw){
+        msg.className = 'form-msg err show';
+        msg.textContent = 'Não encontramos cadastro com esse e-mail. Use a aba "Cadastrar".';
+        return;
+      }
+      let data;
+      try{ data = JSON.parse(raw); }catch(err){ data = null; }
+      if (!data || data.senha !== senha){
+        msg.className = 'form-msg err show';
+        msg.textContent = 'E-mail ou senha incorretos.';
+        return;
+      }
+      showSuccess(data, key);
+    });
+ 
+    /* CADASTRO */
+    const cadForm = panel.querySelector('form[data-view="cadastro"]');
+    cadForm.addEventListener('submit', async function(e){
+      e.preventDefault();
+      const msg = cadForm.querySelector('.form-msg');
+      const btn = cadForm.querySelector('.panel-submit');
+      msg.className = 'form-msg'; msg.textContent = '';
+ 
+      const email = cadForm.querySelector('input[type="email"]').value;
+      const senha = cadForm.querySelector('input[type="password"]').value;
+      const nome = cadForm.querySelector('input[type="text"]').value;
+      const selects = cadForm.querySelectorAll('select');
+      const textInputs = cadForm.querySelectorAll('input[type="text"]');
+      const cidade = textInputs[1] ? textInputs[1].value : '';
+      const resp = textInputs[2] ? textInputs[2].value : '';
+ 
+      const key = prefix + slug(email);
+      btn.disabled = true; btn.textContent = 'Enviando…';
+ 
+      const existing = await storageGet(key);
+      if (existing){
+        btn.disabled = false; btn.textContent = role === 'entidade' ? 'Cadastrar entidade' : 'Cadastrar empresa';
+        msg.className = 'form-msg err show';
+        msg.textContent = 'Já existe um cadastro com esse e-mail. Use a aba "Entrar".';
+        return;
+      }
+ 
+      const record = {
+        nome: nome, responsavel: resp, email: email, senha: senha,
+        cidade: cidade, uf: selects[1] ? selects[1].value : ''
+      };
+      if (role === 'entidade'){ record.tipo = selects[0].value; }
+      else { record.setor = selects[0].value; record.kgDoado = 0; record.doacoes = 0; }
+ 
+      const ok = await storageSet(key, JSON.stringify(record));
+      btn.disabled = false; btn.textContent = role === 'entidade' ? 'Cadastrar entidade' : 'Cadastrar empresa';
+ 
+      if (!ok){
+        msg.className = 'form-msg err show';
+        msg.textContent = 'Não foi possível salvar agora. Tente novamente.';
+        return;
+      }
+      showSuccess(record, key);
+      refreshAll();
+    });
+ 
+    /* DONATE (empresa only) */
+    const donateForm = panel.querySelector('.donate-form');
+    if (donateForm){
+      donateForm.addEventListener('submit', async function(e){
+        e.preventDefault();
+        if (!currentKey) return;
+        const msg = donateForm.querySelector('.form-msg');
+        const btn = donateForm.querySelector('.panel-submit');
+        const tipo = donateForm.querySelector('#don-tipo').value;
+        const kg = parseFloat(donateForm.querySelector('#don-kg').value);
+        msg.className = 'form-msg'; msg.textContent = '';
+ 
+        if (!tipo || !kg || kg <= 0){
+          msg.className = 'form-msg err show';
+          msg.textContent = 'Preencha o tipo de alimento e uma quantidade válida.';
+          return;
+        }
+ 
+        btn.disabled = true; btn.textContent = 'Registrando…';
+        const raw = await storageGet(currentKey);
+        if (!raw){
+          btn.disabled = false; btn.textContent = 'Registrar doação';
+          msg.className = 'form-msg err show';
+          msg.textContent = 'Não foi possível localizar seu cadastro.';
+          return;
+        }
+        const record = JSON.parse(raw);
+        record.kgDoado = (record.kgDoado || 0) + kg;
+        record.doacoes = (record.doacoes || 0) + 1;
+        await storageSet(currentKey, JSON.stringify(record));
+ 
+        btn.disabled = false; btn.textContent = 'Registrar doação';
+        msg.className = 'form-msg ok show';
+        msg.textContent = 'Doação registrada! Obrigado por fazer parte da rede.';
+        success.querySelector('.mini-kg').textContent = fmt(record.kgDoado);
+        success.querySelector('.mini-count').textContent = record.doacoes;
+        donateForm.reset();
+        refreshAll();
+      });
+    }
+  });
+})();
+</script>
+ 
+</body>
+</html>

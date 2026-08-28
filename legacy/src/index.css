@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --color-ink: #0E1116;
+  --color-ink-soft: rgba(14, 17, 22, .66);
+  --color-ink-faint: rgba(14, 17, 22, .42);
+
+  --color-signal: #00C2CE;
+  --color-signal-deep: #006B74;
+  --color-signal-tint: #DFF8F9;
+
+  --color-ember: #EF8600;
+  --color-ember-deep: #913B00;
+  --color-ember-tint: #FFEBD4;
+
+  --color-paper: #F4F3F0;
+  --color-card: #FFFFFF;
+  --color-line: rgba(14, 17, 22, .13);
+
+  /* shadcn/Watermelon UI standard tokens, mapped to the ELO palette above
+     so components pulled from registries (bg-background, border-input, …)
+     inherit the brand instead of shadcn's defaults. */
+  --radius: 0.875rem;
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-card);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-ember);
+  --color-primary-foreground: var(--color-ink);
+  --color-secondary: var(--color-signal);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-card);
+  --color-muted-foreground: var(--color-ink-soft);
+  --color-accent: var(--color-ember-tint);
+  --color-accent-foreground: var(--color-ember-deep);
+  --color-destructive: #D64545;
+  --color-destructive-foreground: #FFFFFF;
+  --color-border: var(--color-line);
+  --color-input: var(--color-line);
+  --color-ring: var(--color-ember);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

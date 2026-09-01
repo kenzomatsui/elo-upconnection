@@ -18,7 +18,7 @@ mais fácil de iterar com IA.
 index.html            → o site inteiro (HTML + <style> + <script> num arquivo só)
 imagens/              → logos, ícones de tipo e imagem de demonstração
 LOVABLE_PROMPT.md     → prompt da versão atual para recriar tudo na Lovable (ver abaixo)
-reference/            → histórico de versões (Elo V1…V5) — mostra a evolução do projeto
+reference/            → histórico de versões (Elo V1…V7) — mostra a evolução do projeto
 legacy/               → protótipo antigo em React/Vite (fora do caminho, mantido só p/ consulta)
 ```
 

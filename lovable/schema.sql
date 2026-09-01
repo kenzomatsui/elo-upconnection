@@ -31,6 +31,16 @@ create table public.perfis (
   telefone           text,
   lat                numeric,
   lng                numeric,
+  cep                text,
+  -- verificação automática do CNPJ (Edge Function validar-cnpj → BrasilAPI / Mapa das OSCs)
+  cnpj_situacao      text,                           -- 'ATIVA', 'BAIXADA', ...
+  natureza_juridica  text,                           -- ex.: '399-9 - Associação Privada'
+  cnae_principal     text,
+  verificado         boolean not null default false,
+  verificacao_fonte  text,                           -- 'brasilapi' | 'mapa_oscs' | 'manual'
+  verificacao_dados  jsonb,
+  verificado_em      timestamptz,
+  nota_media         numeric(3,2) not null default 0, -- média das avaliações recebidas
   consentimento_lgpd boolean not null default false,
   criado_em          timestamptz not null default now(),
   ultimo_acesso      timestamptz
@@ -155,16 +165,37 @@ create index notificacoes_perfil_idx on public.notificacoes (perfil_id, lida);
 
 
 -- ----------------------------------------------------------------------------
--- 8. APOIOS  (doação em dinheiro — só persistir se confirmar pagamento real)
+-- 8. APOIOS  (doação em dinheiro)
 -- ----------------------------------------------------------------------------
 create table public.apoios (
   id                uuid primary key default gen_random_uuid(),
   apoiador_id       uuid references public.perfis (id) on delete set null,
+  nome_apoiador     text,                            -- doações anônimas / sem conta
+  email_apoiador    text,
   valor             numeric not null check (valor > 0),
-  metodo            text not null check (metodo in ('pix', 'cartao')),
-  status            text not null default 'pendente' check (status in ('pendente', 'confirmado', 'falhou')),
+  metodo            text not null check (metodo in ('pix_estatico', 'pix', 'cartao')),
+  provider          text,                            -- 'mercadopago' | 'asaas' | 'efi' | null (pix estático)
+  provider_ref      text,                            -- id da preferência/cobrança no gateway
+  status            text not null default 'pendente' check (status in ('pendente', 'confirmado', 'falhou', 'estornado')),
+  pago_em           timestamptz,
   criado_em         timestamptz not null default now()
 );
+
+
+-- ----------------------------------------------------------------------------
+-- 8b. AVALIACOES  (reputação mútua após uma retirada concluída)
+-- ----------------------------------------------------------------------------
+create table public.avaliacoes (
+  id                uuid primary key default gen_random_uuid(),
+  solicitacao_id    uuid not null references public.solicitacoes (id) on delete cascade,
+  autor_id          uuid not null references public.perfis (id) on delete cascade,
+  alvo_id           uuid not null references public.perfis (id) on delete cascade,
+  nota              smallint not null check (nota between 1 and 5),
+  comentario        text,
+  criado_em         timestamptz not null default now(),
+  unique (solicitacao_id, autor_id)
+);
+create index avaliacoes_alvo_idx on public.avaliacoes (alvo_id);
 
 
 -- ============================================================================
@@ -246,6 +277,19 @@ create trigger on_solicitacao_update
   before update on public.solicitacoes for each row execute function public.processar_solicitacao();
 
 
+-- 9.2b atualiza a nota média do perfil avaliado
+create or replace function public.atualizar_nota_media()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  update public.perfis
+     set nota_media = (select round(avg(nota)::numeric, 2) from public.avaliacoes where alvo_id = new.alvo_id)
+   where id = new.alvo_id;
+  return new;
+end $$;
+create trigger on_avaliacao_insert
+  after insert on public.avaliacoes for each row execute function public.atualizar_nota_media();
+
+
 -- 9.3 marca excedentes vencidos (chamar ao carregar listagens, ou via cron do Supabase)
 create or replace function public.expirar_excedentes()
 returns void language sql security definer set search_path = public as $$
@@ -317,6 +361,7 @@ alter table public.solicitacoes  enable row level security;
 alter table public.doacoes       enable row level security;
 alter table public.notificacoes  enable row level security;
 alter table public.apoios        enable row level security;
+alter table public.avaliacoes    enable row level security;
 
 -- helper: o usuário logado é admin?
 create or replace function public.is_admin()
@@ -368,9 +413,22 @@ create policy doacoes_select on public.doacoes for select to authenticated using
 create policy notificacoes_own on public.notificacoes for all to authenticated
   using (perfil_id = auth.uid()) with check (perfil_id = auth.uid());
 
--- APOIOS
-create policy apoios_own on public.apoios for all to authenticated
-  using (apoiador_id = auth.uid()) with check (apoiador_id = auth.uid());
+-- APOIOS  (leitura do próprio; escrita normalmente via Edge Function / service role)
+create policy apoios_own on public.apoios for select to authenticated
+  using (apoiador_id = auth.uid() or public.is_admin());
+
+-- AVALIACOES  (todos leem — reputação é pública; só o autor cria a sua, uma vez)
+create policy avaliacoes_select on public.avaliacoes for select to authenticated using (true);
+create policy avaliacoes_insert on public.avaliacoes for insert to authenticated
+  with check (
+    autor_id = auth.uid()
+    and exists (
+      select 1 from public.solicitacoes s
+      where s.id = solicitacao_id and s.status = 'concluida'
+        and (s.beneficiario_id = auth.uid()
+             or exists (select 1 from public.excedentes e where e.id = s.excedente_id and e.doador_id = auth.uid()))
+    )
+  );
 
 
 -- ============================================================================

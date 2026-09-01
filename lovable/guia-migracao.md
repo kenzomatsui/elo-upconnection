@@ -3,8 +3,14 @@
 Passo a passo para levar o que já existe (`index.html`) para a Lovable e construir
 o resto lá: backend (Supabase) e páginas pós-login.
 
-> **Ordem importa.** Faça uma etapa, teste, e só então vá para a próxima. Prompts
-> pequenos e verificáveis geram menos bug do que um prompt gigante.
+> **Dois caminhos:**
+> - **Prompt único** (recomendado para começar): copie e cole o
+>   [`prompt-completo.md`](prompt-completo.md) — ele descreve o app inteiro (landing +
+>   área logada dos 3 perfis + backend). Anexe o `index.html` junto.
+> - **Passo a passo** (este arquivo): se preferir prompts menores e mais controláveis,
+>   siga as etapas abaixo. As duas abordagens usam o mesmo `schema.sql`.
+>
+> **Ordem importa.** Faça uma etapa, teste, e só então vá para a próxima.
 
 ---
 

@@ -17,8 +17,8 @@ mais fácil de iterar com IA.
 ```
 index.html            → o site inteiro (HTML + <style> + <script> num arquivo só)
 imagens/              → logos, ícones de tipo e imagem de demonstração
-LOVABLE_PROMPT.md     → prompt da versão atual para recriar o visual na Lovable
-lovable/              → guia de migração p/ Lovable + schema.sql do backend (Supabase)
+LOVABLE_PROMPT.md     → prompt curto p/ recriar só o visual da landing na Lovable
+lovable/              → prompt-completo.md (app inteiro), schema.sql (backend), guia-migracao.md
 reference/            → histórico de versões (Elo V1…V7) — mostra a evolução do projeto
 legacy/               → protótipo antigo em React/Vite (fora do caminho, mantido só p/ consulta)
 ```

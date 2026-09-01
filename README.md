@@ -17,7 +17,8 @@ mais fácil de iterar com IA.
 ```
 index.html            → o site inteiro (HTML + <style> + <script> num arquivo só)
 imagens/              → logos, ícones de tipo e imagem de demonstração
-LOVABLE_PROMPT.md     → prompt da versão atual para recriar tudo na Lovable (ver abaixo)
+LOVABLE_PROMPT.md     → prompt da versão atual para recriar o visual na Lovable
+lovable/              → guia de migração p/ Lovable + schema.sql do backend (Supabase)
 reference/            → histórico de versões (Elo V1…V7) — mostra a evolução do projeto
 legacy/               → protótipo antigo em React/Vite (fora do caminho, mantido só p/ consulta)
 ```
@@ -50,6 +51,8 @@ O regulamento exige que o MVP seja construído e publicado na Lovable. Nosso flu
 3. Na Lovable: colamos o conteúdo do `index.html` como base + o `LOVABLE_PROMPT.md` como
    instrução, e a Lovable regenera o projeto lá dentro.
 4. O backend (Supabase) é ligado na Lovable a partir daí.
+
+**Passo a passo detalhado da migração e do backend:** [`lovable/guia-migracao.md`](lovable/guia-migracao.md).
 
 ## O que ainda falta (frontend)
 
